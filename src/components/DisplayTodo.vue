@@ -58,13 +58,13 @@
   methods: {
     addTodo: function(){
       if( this.newTodo === "" ) return;
-      const todo = {text: this.newTodo, isDone: false, isDeleted: false, isHide: false}
+      const todo = {text: this.newTodo, isDone: false, isDeleted: false, isHide: false};
       this.todos.push( todo );
       this.newTodo = "";
     },
     changeStatus(index){
       const todo = this.todos[index]; 
-      todo.isDone = !todo.isDone
+      todo.isDone = !todo.isDone;
     },
     deleteTask(index){
       this.todos[index].isDeleted = true;
