@@ -8,9 +8,9 @@
   <body>
     <div>
       <h1>TODOリスト</h1>
-      <input type="radio" name="displayButton" id="displayAll" value="all" v-on:click="hideTodo"> 全て
-      <input type="radio" name="displayButton" id="displayDoing" value="doing" v-on:click="hideTodo"> 作業中
-      <input type="radio" name="displayButton" id="displayDone" value="done" v-on:click="hideTodo"> 完了
+      <input type="radio" name="displayButton" id="displayAll" v-model="hideType" value="all"> 全て
+      <input type="radio" name="displayButton" id="displayDoing" v-model="hideType" value="doing"> 作業中
+      <input type="radio" name="displayButton" id="displayDone" v-model="hideType" value="done"> 完了
 
       <table>
         <thead>
@@ -22,18 +22,20 @@
           </tr>
         </thead>
         <tbody>
-          <tr id="app" v-for="(todo, index) in todos" v-bind:key="index" v-bind:class="{ hide: todo.isHide, deleted: todo.isDeleted }">
-            <th class="id">{{ index }}</th>
-            <th class="comment">{{ todo.text }}</th>
-            <th class="state">{{ todo.isDone ? "完了" : "作業中"  }}</th>
-            <th class="button">
-              <button v-on:click="changeStatus(index)">
-                {{ todo.isDone ? "作業中" : "完了" }}
-              </button>
-              <button v-on:click="deleteTask(index)">
-                削除
-              </button>
-            </th>
+          <tr id="app" v-for="(todo, index) in todos" v-bind:key="index">
+            <div v-show="hide(todo)" >
+              <th class="id">{{ index }}</th>
+              <th class="comment">{{ todo.text }}</th>
+              <th class="state">{{ todo.isDone ? "完了" : "作業中"  }}</th>
+              <th class="button">
+                <button v-on:click="changeStatus(index)">
+                  {{ todo.isDone ? "作業中" : "完了" }}
+                </button>
+                <button v-on:click="deleteTask(index)">
+                  削除
+                </button>
+              </th>
+            </div>
           </tr>
         </tbody>
       </table>
@@ -49,10 +51,33 @@
 <script>
   export default {
   el: '#app',
-  data: function() {
+  data: function(){
     return {
+      hideType: "",
+      selectedTodo: "",
       newTodo: "",
       todos: []
+    }
+  },
+  computed:{
+    hide: function( todo ){
+      const hideType = this.data.hideType
+      // ↑こいつのがundefinedになってしまう
+      switch (hideType) {
+        case "doing":
+          if (todo.isDone) {
+            return false;
+          };
+          break;
+        case "done":
+          if (!todo.isDone) {
+            return false;
+          }
+          break;
+        default:
+          return true;
+          break;
+      }
     }
   },
   methods: {
@@ -68,32 +93,6 @@
     },
     deleteTask(index){
       this.todos[index].isDeleted = true;
-    },
-    hideTodo(event){
-      const displayClass = event.target.value;
-      // caseに書き換え
-
-        this.todos.forEach( function(todo) {
-          switch (displayClass) {
-            case "done":
-              if (!todo.isDone){
-                todo.isHide = true;
-              } else {
-                todo.isHide = false;
-              }
-              break;
-            case "doing":
-              if (todo.isDone){
-                todo.isHide = true;
-              }else {
-                todo.isHide = false;
-              }
-              break;
-            default:
-              todo.isHide = false;
-              break;
-          }
-      })
     }
   }
 }
