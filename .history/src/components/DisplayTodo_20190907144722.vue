@@ -61,7 +61,7 @@
   },
   computed:{
     hide: function( todo ){
-      const hideType = this.hideType
+      const hideType = this.data.hideType
       // ↑こいつのがundefinedになってしまう
       switch (hideType) {
         case "doing":
